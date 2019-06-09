@@ -1,0 +1,42 @@
+%=================================================================
+%   Parameters of the MODE algorithm
+%=================================================================
+%
+% number of population : NP
+	100
+% number of generation : GEN_N
+	5000
+% maximum number of evaluation(stopping criteria) : MAX_EVAL = NP x GEN_N
+	1000000
+% DE crossover rate : CR
+	0.9
+% DE amplification factor: F
+	0.3
+% Random seed :SEED
+	0
+% Number of precision: PRECISION
+	6
+%=================================================================
+%   Parameters of the problem
+%=================================================================
+%
+% Cardinality constraint: K
+	20
+% Lower bounds of each asset: LB[N]
+	0.01
+%Upper bounds of each asset: UB[N]
+	1.0
+%Maximum Archive size: ArchiveSize
+	100
+%Accepted Error for Bounding Constraint Check//0.0001
+	0.00001
+%Cardinality Constraint is hard equal constraint or not: 0 = No, 1 = Yes.//isEquatlityCC 
+	1
+%Preassignement constraint: PRE_ASSIGN 
+	[29]
+%Class Constraint: CLASS (Specifies the number of asset in each class)
+	[25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]
+%Real Class Proportion:RCP LB  //assume this should greater than minimum lot amount
+	0.015
+%Round lot of each asset: RLOT[N]
+	0.008

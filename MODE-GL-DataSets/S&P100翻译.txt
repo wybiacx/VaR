@@ -1,0 +1,101 @@
+AA alcoa inc 美国铝业公司
+AAPL apple inc 苹果公司
+ABT abbott laboratories 雅培制药
+AEP American Electric Power Co. Inc. 美国电力公司
+AES AES Corporation AES电力公司
+AIG American International Group, Inc. 美国国际集团
+ALL allstate cp 好事达保险公司
+AMGN amgen 安进
+ATI allegheny tech new 阿勒格尼技术公司
+AVP avon products inc 雅芳公司
+AXP American Express 美国运通公司
+BA boeing co 波音公司
+BAC Bank of America Corporation 美国银行
+BAX baxter intl inc 美国百特国际有限公司
+BHI baker hughes intl 贝克休斯石化
+BK The Bank of New York Company, Inc. 纽约银行公司
+BMY bristol myers squibb 美国百时美施贵宝公司
+BNI Burlington Northern Santa Fe Corporation 美国伯灵顿北方圣太菲铁路运输公司
+BUD anheuser busch 美国安豪泽布施公司
+C citigroup inc 花旗集团
+CAT caterpillar inc 卡特彼勒公司
+CBS CBS Corporation 美国哥伦比亚广播公司
+CCU Clear Channel Communications 清晰频道通信公司
+CI CIGNA Corp. 美国信诺保险集团
+CL colgate palmolive 高露洁棕榄有限公司
+CMCSA Comcast Corp. 美国康卡斯特电信公司
+COF Capital One Financial Corp. 第一资本金融公司
+COP conocophillips 康菲
+COV covidien ltd. （common shares） covidien公司(普通股)
+CPB Campbell Soup Company 金宝汤公司
+CSCO Cisco Systems, Inc. 思科系统公司
+CVS CVS Caremark Corporation CVS公司
+CVX chevron corp 雪佛龙公司
+DD EI DuPont de Nemours & Co. 美国杜邦公司
+DELL dell inc 戴尔
+DIS Walt Disney-Disney C Company Research 华特迪士尼制作公司
+DOW dow chemical 陶氏化学
+EMC EMC Corp. 美国易安信公司
+EP EI paso corporation 厄尔巴索集团
+ETR Entergy Corporation 安特吉公司
+EXC exelon corporation 美国爱克斯龙电力公司
+F ford motor co 福特公司
+FDX fedex corp 联邦快递公司
+GD General Dynamics Corporation 美国通用动力公司
+GE General Electric Company 通用电气公司
+GM General Motors Corporation 通用汽车公司
+GOOG google 谷歌
+GS goldman sachs grp 高盛集团
+HAL halliburton co. 美国哈利伯顿公司
+HD home depot inc 美国家得宝公司
+HET harrah's entertain 哈拉娱乐
+HIG Hartford Financial Services 美国哈特福德金融服务公司
+HNZ H. J. Heinz Company 美国亨氏公司
+HON Honeywell International inc. 美国霍尼韦尔国际公司
+HPQ hewlett packard co. 惠普公司
+IBM International Business Machines Corporation IBM
+INTC intel corporation 英特尔公司
+IP International Paper 美国国际纸业公司
+JNJ Johnson And Johns Dc Company Research 强生公司
+JPM J.P. Morgan Chase & Co., Inc. J.P.摩根大通
+KFT kraft foods inc 卡夫食品公司
+KO Coca-Cola Company 可口可乐公司
+LEH Lehman Brothers Holdings Inc. 美国雷曼兄弟公司
+LTD limited brands inc. 美国LimitedBrands公司
+MCD mcdonalds cp. 麦当劳公司
+MDT medtronic inc. 美敦力公司
+MER Merrill Lynch & Co. Inc. 美林公司
+MMM 3M company 3M公司
+MO altria group inc 美国奥驰亚集团
+MRK merck co. inc 美国默克集团
+MS morgan stanley 摩根士丹利
+MSFT microsoft cp 微软公司
+NSC Norfolk Southern Corp 美国诺福克南方铁路公司
+ORCL oracle corp 甲骨文公司
+OXY Occidental Petroleum Corporation 西方石油
+PEP pepsico inc 百事可乐公司
+PFE pfizer inc 辉瑞公司
+PG procter gamble co. 宝洁公司
+RF Regions Financial Corporation 地区金融公司
+ROK rockwell automat inc 罗克韦尔自动化公司
+RTN raytheon co. (new) 雷神公司(新)
+S sprint nxtel cp. 美国斯普林特Nextel公司
+SLB schlumberger ltd. 美国斯伦贝谢公司
+SLE sara lee cp. 美国莎莉集团
+SO Southern Company 南方公司
+T AT&T Corporation 美国电话电报公司
+TGT target cp. 美国塔吉特公司
+TWX time warner inc 时代华纳
+TXN texas instruments 德州仪器
+TYC Tyco International ltd. 美国泰科国际有限公司
+UPS united parcel svc UPS
+USB us bancorp 美国银行公司
+UTX United Technologies Corp. 美国联合技术公司
+VZ Verizon Communications 美国韦里孙通讯公司
+WB wachovia cp 美联公司
+WFC wells fargo & co (new) 美国富国银行(新)
+WMB Williams Companies, Inc. 威廉公司
+WMT wal-mart stores 沃尔玛
+WY weyerhaeuser companies 惠好公司
+XOM exxon mobil companies 埃克森美孚公司
+XRX xerox companies 施乐公司
