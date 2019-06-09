@@ -53,28 +53,24 @@ struct Asset{
 struct Portfolio{
 	vector<int> select_assets;
 	vector<double> w;
+	double profit,VaR,Crowd; 
 	Portfolio(){
 		profit = 0;
 		VaR = 0;
 		Crowd = 0;
 	}
-	double profit,VaR,Crowd; 
+	bool operator > (const Portfolio &b){
+		if((VaR <= b.VaR && profit > b.profit) || (profit >= b.profit && VaR < b.VaR))
+			return true;
+		else return false;
+	}
 };
 
-bool operator > (const Portfolio &a,const Portfolio &b){
-	if((a.VaR <= b.VaR && a.profit > b.profit) || (a.profit >= b.profit && a.VaR < b.VaR))
-		return true;
-	else return false;
-}
 
-bool operator == (const Portfolio &a,const Portfolio &b){
-	if(a.select_assets == b.select_assets && a.Crowd == b.Crowd && a.profit == b.profit && a.VaR == b.VaR && a.w == b.w)
-		return true;
-	else return false;
-}
 
 
 vector<Asset> Assets;
+
 vector<Portfolio> Portfolios;
 
 vector<Portfolio> A , D;
@@ -357,13 +353,29 @@ void Initial_Group(){
 		
 		
 		//allocate proportion
-		
+		double fir = 0,remain;
+		int remain_count = 0,sum_rand = 0;
+		vector<int> rand_i;
+		for(int j = 1; ; j++)
+			if(vi*j >= Ei){
+				fir = vi*j;
+				break;
+			}
+		remain = 1.0 - K*fir;
+		remain_count = remain / vi;
+		for(int j = 0; j < temp.select_assets.size(); j++)
+			temp.w.push_back(fir);
 		for(int j = 0; j < temp.select_assets.size(); j++){
-			double rand_w = (rand()%99 + 1)/100.0;
-			temp.w.push_back(rand_w);
+			int now_rand = rand()%100;
+			sum_rand += now_rand;
+			rand_i.push_back(now_rand);
 		}
-		
-		Repair(temp);
+		for(int j = 0; j < temp.select_assets.size()-1; j++){
+			temp.w[j] +=  (rand_i[j]/sum_rand)*remain_count  * 1.0*vi;
+			remain -= (rand_i[j]/sum_rand)*remain_count  * 1.0*vi;
+		}
+		temp.w[temp.select_assets.size()-1] += remain;
+			
 		Evaluate(temp);
 		Portfolios.push_back(temp);
 	}
@@ -374,21 +386,19 @@ void Initial_Group(){
 bool cmp1(const Portfolio &a, const Portfolio &b){
 	if((a.VaR <= b.VaR && a.profit > b.profit) || (a.profit >= b.profit && a.VaR < b.VaR))
 		return true;
-	else if((b.VaR <= a.VaR && b.profit > a.profit) || (b.profit >= a.profit && b.VaR < a.VaR))
-		return false;
-	else{
-		if(a.Crowd > b.Crowd)
-			return true;
-		else return false;
-	}
+	else return false;
+
 }
 
 void Maintain_A(){
 	
-	A.clear();
-	sort(Portfolios.begin(),Portfolios.end(),cmp1);
-	for(int i = 0; i < A_max;i++)
+	for(int i = 0; i < Portfolios.size();i++)
 		A.push_back(Portfolios[i]);
+	
+	sort(A.begin(),A.end(),cmp1);
+	
+	while(A.size() > A_max)
+		A.pop_back();
 }
 
 bool cmp2(const Portfolio &a, const Portfolio &b){
@@ -397,12 +407,13 @@ bool cmp2(const Portfolio &a, const Portfolio &b){
 
 void Maintain_D(){
 	
-	D.clear();
-	sort(Portfolios.begin(), Portfolios.end(),cmp2);
-	
-	for(int i = 0; i < D_max; i++)
+	for(int i = 0; i < Portfolios.size(); i++)
 		D.push_back(Portfolios[i]);
+	
+	sort(D.begin(),D.end(),cmp2);
 		
+	while(D.size() > D_max)
+		D.pop_back();
 }
 
 void Calculate_C(){
@@ -416,98 +427,30 @@ void Calculate_C(){
 		C[i] /= A.size();
 	
 }
-/*--------------------------Old----------------------------*/
-/*--------------------------S1~S4--------------------------*/
-/*
-int S1(int use_asset[]){
-	double sum_c = 0,temp_sum;
-	
-	for(int i = 1; i <= N; i++)
-		sum_c += C[i];
-	int index = 0;
-	do{
-		temp_sum = 0;
-		double r = rand()%99 + 1;
-		r /= 100;
-		for(int i = 1; i <= N; i++){
-			temp_sum += C[i] / sum_c;
-			if(r < temp_sum){
-				index = i;
-				break;
-			}
-		}
-			
-	}while(use_asset[index]);
-	
-	return index;
-}
-
-int S2(int use_asset[]){
-	sort(C+1,C + N+1);
-	int index = 0;
-	
-	for(int i = N; i >= 1; i--)
-		if(!use_asset[i]){
-			index = i;
-			break;
-		}	
-	return index;
-}
-
-int S3(int use_asset[]){
-	int index = 0;
-	double max_mean_return = -999;
-	for(int i = 0; i < Assets.size(); i++)
-		if(!use_asset[i+1]){
-			if(Assets[i].Aver_return > max_mean_return){
-				index = i+1;
-				max_mean_return = Assets[i].Aver_return;
-			}
-		}
-	return index;	
-}
-
-int S4(int use_asset[]){
-	int index = 0;
-	double least_sta_de = 999;
-	for(int i = 0; i < Assets.size(); i++)
-		if(!use_asset[i+1]){
-			if(Assets[i].Sta_deviation < least_sta_de){
-				index = i+1;
-				least_sta_de = Assets[i].Sta_deviation;
-			}
-		}
-	return index;
-}
-
-*/
-/*-----------------------------------------------------------*/
 
 
 
 /*------------------------New S1~S4--------------------------*/
 
 int S1(int use_asset[],int l,int r){
-	double sum_c = 0,temp_c,rand_cr;
-	
+	double sum_c = 0,temp_c = 0,rand_cr;
+	vector<int> sta;
 	for(int i = l; i <= r; i++)
-		sum_c += C[i];
-	int index = 1;
-	
-	while(true){
-		temp_c = 0;
-		rand_cr = rand()%99 + 1;
-		rand_cr /= 100;
-		for(int i = l; i <= r; i++){
-			temp_c += C[i]/sum_c;
-			if(rand_cr <= temp_c){
-				index = i;
-				break;
-			}
+		if(!use_asset[i]){
+			sum_c += C[i];
+			sta.push_back(i);
 		}
-		if(!use_asset[index])break;
-	}
 	
+	int index = l;
+	rand_cr = rand()%99+1;
+	rand_cr /= 100;
+	for(int i = 0; i < sta.size(); i++){
+		temp_c += C[sta[i]] / sum_c;
+		if(rand_cr <= temp_c){
+			index = sta[i];
+			break;
+		}
+	}
 	return index;
 }
 
@@ -562,7 +505,7 @@ bool False(Portfolio &now){
 	return !flag;
 }
 
-Portfolio Generate(const Portfolio Pa){
+Portfolio Generate(const int index_p){
 	
 	Portfolio temp;
 	
@@ -745,24 +688,18 @@ void MODE_GL(){
 	
 	while(iter <= GENERATION){
 		
-		//printf("1\n");
 		Maintain_A();
-		//printf("2\n");
 		Maintain_D();
-		//printf("3\n");
 		Calculate_C();
-		//printf("4\n");
+		
 		for(int i = 0; i < Portfolios.size(); i++){
-			Portfolio new_p = Generate(Portfolios[i]);
-			printf("5\n");
-			if(Violated(new_p)){
-				//printf("Repair\n");
+			Portfolio new_p = Generate(i);
+			
+			if(Violated(new_p))
 				Repair(new_p);
-			}
 				
-			printf("6\n");
 			Evaluate(new_p);
-			printf("7\n");
+			
 			//overload operator ">" in struct Portfolio
 			if(new_p > Portfolios[i])
 				Portfolios[i] = new_p;
@@ -771,22 +708,14 @@ void MODE_GL(){
 			}
 			else 
 				Portfolios.push_back(new_p);
-			printf("8\n");
 		}
-		//printf("9\n");
 		Calculate_Crowd();
 		if(Portfolios.size() > POPULATION){
 			sort(Portfolios.begin(), Portfolios.end(),cmp1);
 			while(Portfolios.size() > POPULATION)
 				Portfolios.pop_back();
 		}
-		//printf("10\n");
 		iter++;
-		printf("iter = %d\n",iter);
-		if(iter == 100){
-			Output();
-			return;
-		}
 	}
 }
 
