@@ -76,9 +76,11 @@ struct Portfolio{
 
 vector<Asset> Assets;
 
-vector<Portfolio> Portfolios;
+Portfolio Portfolios[2*POPULATION + 10];
 
-vector<Portfolio> A , D;
+Portfolio A[POPULATION+A_max + 10] , D[POPULATION +A_max + 10];
+
+int HEAD_P,HEAD_A,HEAD_D;
 
 vector<int> Z;
 
@@ -285,26 +287,26 @@ bool cmp4(const Portfolio &a,const Portfolio &b){
 
 void Calculate_Crowd(){
 	
-	sort(Portfolios.begin(),Portfolios.end(),cmp3);
+	sort(Portfolios,Portfolios+HEAD_P,cmp3);
 	
 	
-	for(int i = 1; i < Portfolios.size()-1; i++){
+	for(int i = 1; i < HEAD_P-1; i++){
 		double d1 = Portfolios[i].profit - Portfolios[i-1].profit;
 		double d2 = Portfolios[i+1].profit - Portfolios[i].profit;
 		Portfolios[i].Crowd = (fabs(d1)+ fabs(d2))/2;
 	}
 	Portfolios[0].Crowd = INF;
-	Portfolios[Portfolios.size()-1].Crowd = INF;
+	Portfolios[HEAD_P-1].Crowd = INF;
 	
-	sort(Portfolios.begin(),Portfolios.end(),cmp4);
+	sort(Portfolios,Portfolios+HEAD_P,cmp4);
 	
-	for(int i = 1; i < Portfolios.size()-1; i++){
+	for(int i = 1; i < HEAD_D-1; i++){
 		double d1 = Portfolios[i].VaR - Portfolios[i-1].VaR;
 		double d2 = Portfolios[i+1].VaR - Portfolios[i].VaR;
 		Portfolios[i].Crowd += (fabs(d1)+ fabs(d2))/2;
 	}
 	Portfolios[0].Crowd += INF;
-	Portfolios[Portfolios.size()-1].Crowd += INF;
+	Portfolios[HEAD_P-1].Crowd += INF;
 }
 void Initial_Group(){
 	Z.push_back(30);
@@ -367,7 +369,7 @@ void Initial_Group(){
 		temp.w[temp.select_assets.size()-1] += remain;
 			
 		Evaluate(temp);
-		Portfolios.push_back(temp);
+		Portfolios[HEAD_P++] = temp;
 	}
 	
 	Calculate_Crowd();
