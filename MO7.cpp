@@ -14,7 +14,7 @@ using namespace std;
 
 #define POPULATION 100
 #define N 94
-#define GENERATION 5000*2
+#define GENERATION 5000*3
 #define F 0.3
 #define CR 0.9
 #define A_max 100
@@ -26,7 +26,6 @@ using namespace std;
 #define Lm 0.05
 #define Um 0.75
 
-#define T 999 
 #define aa 0.05
 
 #define INF 99999999
@@ -78,9 +77,13 @@ vector<Asset> Assets;
 
 Portfolio Portfolios[2*POPULATION + 10];
 
-Portfolio A[2*POPULATION+A_max + 10] , D[2*POPULATION +A_max + 10];
+Portfolio A[A_max+POPULATION + 10] , D[POPULATION +D_max + 10];
+
+Portfolio Temp_p[2*POPULATION+10]; 
 
 int HEAD_P = 0,HEAD_A = 0,HEAD_D = 0;
+
+int level[2*POPULATION+10],use_A[2*POPULATION+10],use_D[2*POPULATION+10];
 
 vector<int> Z;
 
@@ -130,7 +133,7 @@ void Input(){
 		fin.close();
 		fin.clear();
 		vector<double> now_return;
-		for(int j = 1; j < now_data.size(); j++){
+		for(int j = 1; j <=751; j++){
 			double temp3;
 			int index1,index2;
 			index1 = now_data[j].find(',');
@@ -139,9 +142,13 @@ void Input(){
 			sscanf(sub.c_str(),"%lf",&temp3);
 			now_return.push_back(temp3);
 		}
-		for(int j = 0; j < now_return.size()-1; j++)
-			now_return[j] -= now_return[j+1];
+		
+		for(int j = 0; j < now_return.size()-1; j++){
+			now_return[j] = (now_return[j]-now_return[j+1])/now_return[j+1];
+		}
+			
 		now_return.pop_back();
+		//printf("asset %d size = %d\n",i+1,now_return.size());
 		Assets[i]._return = now_return;
 		Assets[i].Cal();
 	}
@@ -190,7 +197,11 @@ void Evaluate(Portfolio &now){
 			break;
 		}
 	}	
-		
+	
+//	if(pro != pro){
+//		printf("error!\n");
+//		display2(now);
+//	}
 	now.profit = pro;
 	now.VaR = Va;
 }
@@ -300,7 +311,7 @@ void Calculate_Crowd(){
 	
 	sort(Portfolios,Portfolios+HEAD_P,cmp4);
 	
-	for(int i = 1; i < HEAD_D-1; i++){
+	for(int i = 1; i < HEAD_P-1; i++){
 		double d1 = Portfolios[i].VaR - Portfolios[i-1].VaR;
 		double d2 = Portfolios[i+1].VaR - Portfolios[i].VaR;
 		Portfolios[i].Crowd += (fabs(d1)+ fabs(d2))/2;
@@ -337,7 +348,7 @@ void Initial_Group(){
 			
 			int rand_s;
 			do{
-				rand_s = rand()%94;
+				rand_s = rand()%94+1;
 			}while(asset_use[rand_s]);
 			temp.select_assets.push_back(rand_s);
 			asset_use[rand_s] = 1;
@@ -358,7 +369,7 @@ void Initial_Group(){
 		for(int j = 0; j < temp.select_assets.size(); j++)
 			temp.w.push_back(fir);
 		for(int j = 0; j < temp.select_assets.size(); j++){
-			int now_rand = rand()%100;
+			int now_rand = rand()%99 + 1;
 			sum_rand += now_rand;
 			rand_i.push_back(now_rand);
 		}
@@ -367,7 +378,7 @@ void Initial_Group(){
 			remain -= (rand_i[j]/sum_rand)*remain_count  * 1.0*vi;
 		}
 		temp.w[temp.select_assets.size()-1] += remain;
-			
+		Repair(temp);	
 		Evaluate(temp);
 		Portfolios[HEAD_P++] = temp;
 	}
@@ -375,39 +386,107 @@ void Initial_Group(){
 	Calculate_Crowd();
 } 
 
-bool cmp1(const Portfolio &a, const Portfolio &b){
-	if((a.VaR <= b.VaR && a.profit > b.profit) || (a.profit >= b.profit && a.VaR < b.VaR))
-		return true;
-	else return false;
+//int cmp1(const Portfolio &a, const Portfolio &b){
+//	if (a.VaR<b.VaR&&a.profit>b.profit)
+//	return 1;
+//	if (a.VaR>b.VaR&&a.profit<b.profit)
+//	return -1;
+//	else
+//	return 0; 
+//}
 
-}
 
 void Maintain_A(){
 	
-	HEAD_A = 0;
-	for(int i = 0; i < HEAD_P;i++)
+	int size_t = 0;
+//	printf("1\n");
+	memset(use_A,0,sizeof(use_A));
+	for(int i = 0; i < HEAD_P; i++)
 		A[HEAD_A++] = Portfolios[i];
+	for(int i = 0; i < HEAD_A; i++){
+		if(!use_A[i]){
+			level[size_t] = 1;
+			Temp_p[size_t++] = A[i];
+		}
+		for(int j = i+1; j < HEAD_A; j++)
+			if(A[j] == A[i])use_A[j] = 1;
+	}
+//	printf("2\n");
+	HEAD_A = 0;
+	int now_level = 1;
+	if(size_t < A_max){
+		for(int i = 0; i < size_t; i++)
+			A[HEAD_A++] = Temp_p[i];
+	}
+	else while(HEAD_A < A_max){
+		now_level++;
+		for(int i = 0; i < size_t; i++){
+			if(level[i] != now_level-1)continue;
+			for(int j = 0; j < size_t;j++){
+				if(i == j)continue;
+				if(level[j] == now_level-1){
+					if((Temp_p[j].VaR <= Temp_p[i].VaR && Temp_p[j].profit > Temp_p[i].profit) ||
+						(Temp_p[j].VaR < Temp_p[i].VaR && Temp_p[j].profit >= Temp_p[i].profit)){
+							level[i]++;
+							break;
+						}
+				}
+			}
+		}
+		for(int i = 0; i < size_t && HEAD_A < A_max ; i++)
+			if(level[i] == now_level-1){
+				A[HEAD_A++] = Temp_p[i];
+			}	
+	}
 	
-	sort(A,A+HEAD_A,cmp1);
 	
-	while(HEAD_A > A_max)
-		HEAD_A--;
-	//printf("now best profit = %.4f	VaR = %.4f\n",A[0].profit,A[0].VaR);
 }
 
 bool cmp2(const Portfolio &a, const Portfolio &b){
 	return a.Crowd > b.Crowd;
 }
 
+void Cal_Crowd2(Portfolio Te[],int size_t){
+	
+	sort(Te,Te+size_t,cmp3);
+	
+	
+	for(int i = 1; i < size_t-1; i++){
+		double d1 = Te[i].profit - Te[i-1].profit;
+		double d2 = Te[i+1].profit - Te[i].profit;
+		Te[i].Crowd = (fabs(d1)+ fabs(d2))/2;
+	}
+	Te[0].Crowd = INF;
+	Te[size_t-1].Crowd = INF;
+	
+	sort(Te,Te+size_t,cmp4);	
+	for(int i = 1; i < HEAD_P-1; i++){
+		double d1 = Te[i].VaR - Te[i-1].VaR;
+		double d2 = Te[i+1].VaR - Te[i].VaR;
+		Te[i].Crowd += (fabs(d1)+ fabs(d2))/2;
+	}
+	Te[0].Crowd += INF;
+	Te[size_t-1].Crowd += INF;
+}
+
 void Maintain_D(){
-	HEAD_D = 0;
+	memset(use_D,0,sizeof(use_D));
+	
+	int size_t = 0;
 	for(int i = 0; i < HEAD_P; i++)
 		D[HEAD_D++] = Portfolios[i];
+	for(int i = 0; i < HEAD_D; i++){
+		if(!use_D[i])Temp_p[size_t++] = D[i];
+		for(int j = i+1; j < HEAD_D; j++)
+			if(D[i] == D[j])use_D[j] = 1;
+	}
+	Cal_Crowd2(Temp_p,size_t);
 	
-	sort(D,D+HEAD_D,cmp2);
-		
-	while(HEAD_D > D_max)
-		HEAD_D--;
+	HEAD_D = 0;
+	sort(Temp_p,Temp_p + size_t,cmp2);
+	for(int i = 0; i < D_max; i++)
+		D[HEAD_D++] = Temp_p[i];
+	
 }
 
 void Calculate_C(){
@@ -562,22 +641,24 @@ Portfolio Generate(const int index_p){
 //	printf("G1\n");
 	
 	int best,p1,p2;
+	
 	do{
 		best = rand()%(A_max/10);
-	} while(A[best] == Portfolios[index_p]);
+	}while(A[best] == Portfolios[index_p]);
 	
-	//printf("r1\n");
+	
+	
 	do{
 		p1 = rand()%D_max;
 	}while(D[p1] == A[best] || D[p1] == Portfolios[index_p]);
 	
-	//printf("r2\n");
 	do{
-		p2 = rand()%D_max;
-		//printf("p2 = %d	p1 = %d\n",p2,p1);
+		p2 = rand()%D_max;	
 	}while(p1 == p2 || D[p2] == A[best] || D[p2] == Portfolios[index_p]);
 	
-	//printf("G2\n");
+	
+	
+//	printf("G2\n");
 	int i,j,y;
 	i = rand() % K;
 	j = y = i;
@@ -636,7 +717,7 @@ bool Violated(const Portfolio &now){
 void Output(){
 	
 	for(int i = 0; i < HEAD_A; i++){
-		printf("%.6f,%.6f\n",A[i].profit,A[i].VaR);
+		printf("%.6f,%.6f\n",A[i].VaR,A[i].profit);
 	}
 	
 }
@@ -652,15 +733,30 @@ bool cmp5(const Portfolio &a,const Portfolio &b){
 	}
 }
 
+void display(){
+	for(int i = 0; i < HEAD_P; i++){
+		for(int j = 0; j < K; j++)
+			printf("%d ",Portfolios[i].select_assets[j]);
+		printf("\n");
+		for(int j = 0; j < K; j++)
+			printf("%.2f ",Portfolios[i].w[j]);
+		printf("\n");
+	}
+//	return;
+	for(int i = 0; i < HEAD_P; i++)
+		printf("VaR = %.6f,pro = %.6f\n",Portfolios[i].VaR,Portfolios[i].profit);
+}
+
 void MODE_GL(){
 	
 	int iter = 1;
 	Initial_Group();
-	
 	while(iter <= GENERATION){
 		//printf("1\n");
 		Maintain_A();
+		//printf("A\n");
 		Maintain_D();
+		//printf("D\n");
 		Calculate_C();
 		//printf("2\n");
 		for(int i = 0; i < POPULATION; i++){
@@ -678,7 +774,7 @@ void MODE_GL(){
 				//delete new_p;
 			}
 			else 
-				Portfolios[++HEAD_P] = new_p;
+				Portfolios[HEAD_P++] = new_p;
 		}
 		//printf("6\n");
 		Calculate_Crowd();
@@ -689,13 +785,13 @@ void MODE_GL(){
 		}
 		//printf("7\n");
 		iter++;
-		printf("iter = %d\n",iter);
+	//	printf("iter = %d\n",iter);
 	}
 }
 
 
 int main(){
-	freopen("first_out.txt","w",stdout);
+	freopen("sixteenth_out.csv","w",stdout);
 	srand(time(0));
 	time_t T_begin = clock();
 	
@@ -709,7 +805,7 @@ int main(){
 	
 	time_t T_end = clock();
 	double Running_time = (T_end - T_begin) / CLOCKS_PER_SEC;
-	printf("Running time:%.2f\n",Running_time);
+//	printf("Running time:%.2f\n",Running_time);
 	fclose(stdout);
 	return 0;
 } 
