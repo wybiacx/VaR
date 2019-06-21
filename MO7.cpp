@@ -104,7 +104,7 @@ int ID(int now){
 
 void Input(){
 	
-	ifstream fin(".\\MODE-GL-DataSets\\S&P100\\stocktickerSP94.txt");
+	ifstream fin(".//MODE-GL-DataSets//S&P100//stocktickerSP94.txt");
 	if(!fin.is_open()){
 		printf("Data name files open error!\n");
 		return;
@@ -119,7 +119,7 @@ void Input(){
 	
 	for(int i = 0; i < Assets.size(); i++){
 		
-		string file_name = ".\\MODE-GL-DataSets\\S&P100\\" + Assets[i].name + ".csv";
+		string file_name = ".//MODE-GL-DataSets//S&P100//" + Assets[i].name + ".csv";
 		fin.open(file_name.c_str());
 		if(!fin.is_open()){
 			printf("Data file open error!\n");
@@ -785,19 +785,19 @@ void MODE_GL(){
 		}
 		//printf("7\n");
 		iter++;
-	//	printf("iter = %d\n",iter);
+		printf("iter = %d\n",iter);
 	}
 }
 
 
 int main(){
-	freopen("sixteenth_out.csv","w",stdout);
+//	freopen("sixteenth_out.csv","w",stdout);
 	srand(time(0));
 	time_t T_begin = clock();
 	
 	Input();
 	
-	//test1();
+	//test1(); 
 	
 	MODE_GL();
 	
@@ -805,7 +805,7 @@ int main(){
 	
 	time_t T_end = clock();
 	double Running_time = (T_end - T_begin) / CLOCKS_PER_SEC;
-//	printf("Running time:%.2f\n",Running_time);
-	fclose(stdout);
+	printf("Running time:%.2f\n",Running_time);
+//	fclose(stdout);
 	return 0;
 } 
